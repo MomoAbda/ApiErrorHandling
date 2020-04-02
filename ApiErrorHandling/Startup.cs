@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApiErrorHandling.Core;
+using ApiErrorHandling.Repository;
+using ApiErrorHandling.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -26,6 +30,8 @@ namespace ApiErrorHandling
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.TryAddSingleton<IUserRepository, UserRepository>();
+            services.TryAddSingleton<IRandomApiService, RandomApiService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,6 +41,7 @@ namespace ApiErrorHandling
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseMiddleware<BusinessErrorHandlingMiddleware>();
 
             app.UseHttpsRedirection();
 
